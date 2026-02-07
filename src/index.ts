@@ -202,21 +202,32 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }
       }
 
-      // Step 5: Return response with routing metadata
-      const metadata = [
+      // Step 5: Return response with routing metadata as separate content blocks
+      // First block: routing info (structured for the user to see)
+      // Second block: the actual response
+      const routing = [
+        `--- Routing ---`,
         `Provider: ${getProvider(model)}`,
-        `Model: ${model}`,
-        `Task: ${decision.signals.task_type}`,
-        `Stakes: ${decision.signals.stakes}`,
-        `Confidence: ${decision.confidence}`,
-        `Reason: ${decision.reason}`,
-      ].join(" | ");
+        `Model:    ${model}`,
+        `Task:     ${decision.signals.task_type}`,
+        `Stakes:   ${decision.signals.stakes}`,
+        `Ambiguity:${decision.signals.ambiguity}`,
+        `Confidence:${decision.confidence}`,
+        `Reason:   ${decision.reason}`,
+        `--- Response ---`,
+      ].join("\n");
 
       return {
-        content: [{
-          type: "text",
-          text: `[${metadata}]\n\n${response}`,
-        }],
+        content: [
+          {
+            type: "text",
+            text: routing,
+          },
+          {
+            type: "text",
+            text: response,
+          },
+        ],
       };
     }
 
