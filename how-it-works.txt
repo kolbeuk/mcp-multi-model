@@ -1,0 +1,115 @@
+HOW THE MULTI-MODEL SECOND OPINION SERVER WORKS
+================================================
+
+THE SHORT VERSION
+-----------------
+When you chat with Claude (an AI assistant), it normally only has its own
+brain to work with. This tool gives Claude the ability to ask OTHER AI
+assistants (from OpenAI and Google) for a second opinion — like a doctor
+consulting a specialist.
+
+
+THE PROBLEM IT SOLVES
+---------------------
+Imagine you're working with Claude and it gets stuck on a tricky coding
+problem, or you want to double-check its answer. Normally, you'd have to
+copy-paste the question into ChatGPT or Gemini yourself. This tool lets
+Claude do that automatically, right inside your conversation.
+
+
+HOW IT WORKS, STEP BY STEP
+---------------------------
+1. You're chatting with Claude and ask it something tough, or Claude
+   decides it wants a second opinion on its own.
+
+2. Claude calls the "get_second_opinion" tool with your question.
+
+3. Before asking another AI, a tiny fast AI (called gpt-5-nano) acts
+   like a receptionist. It looks at the question and decides:
+   - "Is this a coding question? Send it to OpenAI."
+   - "Does it involve images or documents? Send it to Google Gemini."
+   - "Is this simple or complex?" and picks a small or large AI model
+     accordingly.
+
+4. The question gets sent to the chosen AI, and the answer comes back
+   to Claude.
+
+5. If the chosen AI isn't confident in its answer (or crashes), the
+   system automatically "escalates" — it asks a bigger, smarter model
+   the same question.
+
+6. Claude gets the answer and uses it to give you a better response.
+
+
+THE AI MODELS IT CAN USE
+-------------------------
+Think of these like different sizes of expert:
+
+From OpenAI:
+  - gpt-5-nano    = Quick and cheap, good for simple questions
+  - gpt-5-mini    = Middle ground, handles most things well
+  - gpt-5.2       = The big gun, for really hard problems
+
+From Google:
+  - gemini-3-flash = Fast, great with images/documents/audio
+  - gemini-3-pro   = Slower but smarter, for deep analysis
+
+
+THE SMART ROUTING (THE RECEPTIONIST)
+-------------------------------------
+The system doesn't just randomly pick a model. It uses a small, fast AI
+to read your question and figure out the best match. For example:
+
+  "Fix this Python bug"          → sends to OpenAI (good at code)
+  "Analyze this PDF"             → sends to Google Gemini (handles files)
+  "What's 2+2?"                  → sends to the smallest/cheapest model
+  "Design a database for a bank" → sends to the biggest/smartest model
+
+If the receptionist isn't sure (confidence below 65%), it automatically
+upgrades to a bigger model to be safe.
+
+
+WHAT YOU NEED TO USE IT
+-----------------------
+- Claude Desktop or Claude Code (the app you chat with Claude in)
+- An API key from OpenAI (required — the receptionist needs it)
+- An API key from Google Gemini (optional but recommended)
+
+API keys are like passwords that let the system talk to OpenAI and
+Google on your behalf. They cost money per use, but the smart routing
+keeps costs low by using the smallest model that can handle each
+question.
+
+
+WHAT IT LOOKS LIKE IN PRACTICE
+-------------------------------
+You: "Hey Claude, can you double-check if this sorting algorithm is
+      correct?"
+
+Claude: *calls get_second_opinion*
+
+Behind the scenes:
+  - Receptionist (gpt-5-nano): "This is a code review, medium
+    complexity. Sending to gpt-5-mini."
+  - gpt-5-mini: "The algorithm looks correct but has O(n^2) time
+    complexity. Consider using merge sort for better performance."
+
+Claude: "I checked with another AI model and we both agree the
+         algorithm works, but here's a suggestion to make it faster..."
+
+
+WHY NOT JUST USE CHATGPT DIRECTLY?
+------------------------------------
+- You don't have to leave your conversation with Claude
+- Claude can combine the second opinion with its own knowledge
+- The routing is automatic — you don't have to decide which AI to ask
+- It picks the cheapest model that can handle the job, saving money
+- If one model fails, it automatically tries a bigger one
+
+
+COST
+----
+Each question sent to another AI costs a small amount (fractions of a
+cent for simple questions, a few cents for complex ones). The smart
+routing minimizes cost by always trying the smallest capable model
+first.
