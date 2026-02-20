@@ -9,7 +9,10 @@ export async function queryGemini(
   maxTokens?: number
 ): Promise<string> {
   const genAI = new GoogleGenerativeAI(apiKey);
-  const geminiModel = genAI.getGenerativeModel({ model });
+  const geminiModel = genAI.getGenerativeModel(
+  { model },
+  { apiVersion: "v1beta" }
+);
 
   const generationConfig: any = {
     temperature: temperature ?? 0.7,
