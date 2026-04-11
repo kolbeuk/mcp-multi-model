@@ -5,3 +5,8 @@ claude_desktop_config.json
 .env
 *.log
 .DS_Store
+
+# Python
+.venv/
+venv/
+__pycache__/
